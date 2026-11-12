@@ -1,0 +1,17 @@
+# Total budget per year, by top-level category (operating, investment, debt).
+# skos:broader links each budget line to its category: the query works
+# on the hierarchy, not on hard-coded line names.
+
+PREFIX bud:  <https://github.com/mohamedaminsoumih/morocco-budget-kg/ontology#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?year ?category (SUM(?amount) / 1000000000 AS ?billion_mad)
+WHERE {
+    ?allocation bud:inLaw/bud:budgetYear ?year ;
+                bud:budgetLine/skos:broader ?top ;
+                bud:paymentCredits ?amount .
+    ?top skos:prefLabel ?category .
+    FILTER (lang(?category) = "en")
+}
+GROUP BY ?year ?category
+ORDER BY ?year ?category

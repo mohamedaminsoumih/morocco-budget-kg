@@ -1,0 +1,115 @@
+@prefix bud:  <https://github.com/mohamedaminsoumih/morocco-budget-kg/ontology#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# ---------------------------------------------------------------------
+# Ontology of Morocco's state budget (budget général)
+# ---------------------------------------------------------------------
+
+bud: a owl:Ontology ;
+    rdfs:label "Morocco state budget ontology"@en ,
+               "Ontologie du budget de l'Etat marocain"@fr .
+
+# ----- Classes -------------------------------------------------------
+
+bud:Institution a owl:Class ;
+    rdfs:label "Institution"@en , "Département ministériel ou institution"@fr ;
+    rdfs:comment """Receives budget credits. Identified by its budget code,
+        which stays the same when its name changes."""@en .
+
+bud:Ministry a owl:Class ;
+    rdfs:subClassOf bud:Institution ;
+    rdfs:label "Ministry"@en , "Ministère"@fr .
+
+bud:FinanceLaw a owl:Class ;
+    rdfs:label "Finance law"@en , "Loi de finances"@fr .
+
+bud:VotedLaw a owl:Class ;
+    rdfs:subClassOf bud:FinanceLaw ;
+    rdfs:label "Voted finance law (LF)"@en .
+
+bud:DraftLaw a owl:Class ;
+    rdfs:subClassOf bud:FinanceLaw ;
+    rdfs:label "Draft finance law (PLF)"@en .
+
+bud:Allocation a owl:Class ;
+    rdfs:label "Budget allocation"@en , "Chapitre budgétaire"@fr ;
+    rdfs:comment """Credits opened by one finance law, for one institution
+        and one budget line."""@en .
+
+bud:OfficialName a owl:Class ;
+    rdfs:label "Official name"@en ;
+    rdfs:comment "Name of an institution as written in one finance law."@en .
+
+# ----- Properties ----------------------------------------------------
+
+bud:budgetCode a owl:DatatypeProperty ;
+    rdfs:domain bud:Institution ; rdfs:range xsd:string .
+
+bud:budgetYear a owl:DatatypeProperty ;
+    rdfs:domain bud:FinanceLaw ; rdfs:range xsd:gYear .
+
+bud:allocatedTo a owl:ObjectProperty ;
+    rdfs:domain bud:Allocation ; rdfs:range bud:Institution .
+
+bud:inLaw a owl:ObjectProperty ;
+    rdfs:range bud:FinanceLaw .
+
+bud:budgetLine a owl:ObjectProperty ;
+    rdfs:domain bud:Allocation ; rdfs:range skos:Concept .
+
+bud:chapterCode a owl:DatatypeProperty ;
+    rdfs:domain bud:Allocation ; rdfs:range xsd:string .
+
+bud:paymentCredits a owl:DatatypeProperty ;
+    rdfs:label "Payment credits (MAD)"@en , "Crédits de paiement"@fr ;
+    rdfs:domain bud:Allocation ; rdfs:range xsd:decimal .
+
+bud:commitmentCredits a owl:DatatypeProperty ;
+    rdfs:label "Commitment credits for next years (MAD)"@en ,
+               "Crédits d'engagement"@fr ;
+    rdfs:domain bud:Allocation ; rdfs:range xsd:decimal .
+
+bud:nameKey a owl:DatatypeProperty ;
+    rdfs:comment """Name without accents, case and apostrophe differences,
+        used to tell a real renaming from a spelling variation."""@en ;
+    rdfs:domain bud:OfficialName ; rdfs:range xsd:string .
+
+bud:nameOf a owl:ObjectProperty ;
+    rdfs:domain bud:OfficialName ; rdfs:range bud:Institution .
+
+# ----- Budget nomenclature (SKOS hierarchy) --------------------------
+
+bud:BudgetNomenclature a skos:ConceptScheme ;
+    rdfs:label "Budget nomenclature"@en .
+
+bud:Operating a skos:Concept ; skos:inScheme bud:BudgetNomenclature ;
+    skos:prefLabel "Operating"@en , "Fonctionnement"@fr .
+bud:Investment a skos:Concept ; skos:inScheme bud:BudgetNomenclature ;
+    skos:prefLabel "Investment"@en , "Investissement"@fr .
+bud:DebtService a skos:Concept ; skos:inScheme bud:BudgetNomenclature ;
+    skos:prefLabel "Debt service"@en , "Service de la dette"@fr .
+
+bud:operating_staff a skos:Concept ; skos:broader bud:Operating ;
+    skos:prefLabel "Staff"@en , "Personnel"@fr .
+bud:operating_equipment a skos:Concept ; skos:broader bud:Operating ;
+    skos:prefLabel "Equipment and other expenses"@en ,
+                   "Matériel et dépenses diverses"@fr .
+bud:operating_common_charges a skos:Concept ; skos:broader bud:Operating ;
+    skos:prefLabel "Common charges"@en , "Charges communes"@fr .
+bud:operating_unforeseen a skos:Concept ; skos:broader bud:Operating ;
+    skos:prefLabel "Unforeseen expenses"@en , "Dépenses imprévues"@fr .
+bud:operating_tax_refunds a skos:Concept ; skos:broader bud:Operating ;
+    skos:prefLabel "Tax refunds"@en , "Remboursements fiscaux"@fr .
+bud:investment a skos:Concept ; skos:broader bud:Investment ;
+    skos:prefLabel "Investment"@en , "Investissement"@fr .
+bud:investment_common_charges a skos:Concept ; skos:broader bud:Investment ;
+    skos:prefLabel "Investment common charges"@en ,
+                   "Charges communes d'investissement"@fr .
+bud:debt_interest a skos:Concept ; skos:broader bud:DebtService ;
+    skos:prefLabel "Interest and fees"@en , "Intérêts et commissions"@fr .
+bud:debt_amortization a skos:Concept ; skos:broader bud:DebtService ;
+    skos:prefLabel "Principal repayment"@en , "Amortissements"@fr .

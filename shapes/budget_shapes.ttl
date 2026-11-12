@@ -1,0 +1,44 @@
+@prefix bud:  <https://github.com/mohamedaminsoumih/morocco-budget-kg/ontology#> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# Rules every fact in the graph must follow (SHACL shapes).
+
+bud:AllocationShape a sh:NodeShape ;
+    sh:targetClass bud:Allocation ;
+    sh:property [
+        sh:path bud:allocatedTo ; sh:class bud:Institution ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+    ] , [
+        sh:path bud:inLaw ; sh:class bud:FinanceLaw ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+    ] , [
+        sh:path bud:budgetLine ; sh:class skos:Concept ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+    ] , [
+        sh:path bud:chapterCode ;
+        sh:pattern "^1\\.2\\.[123]\\.[0-9]\\.0\\.[0-9]{2}\\.000$" ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+    ] , [
+        sh:path bud:paymentCredits ; sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ; sh:minCount 1 ; sh:maxCount 1 ;
+    ] .
+
+bud:InstitutionShape a sh:NodeShape ;
+    sh:targetClass bud:Institution ;
+    sh:property [
+        sh:path bud:budgetCode ; sh:pattern "^[0-9]{2}$" ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+    ] , [
+        sh:path [ sh:inversePath bud:nameOf ] ;
+        sh:minCount 1 ;
+        sh:message "Every institution needs at least one official name" ;
+    ] .
+
+bud:OfficialNameShape a sh:NodeShape ;
+    sh:targetClass bud:OfficialName ;
+    sh:property [
+        sh:path <http://www.w3.org/2000/01/rdf-schema#label> ;
+        sh:minLength 3 ; sh:minCount 1 ;
+    ] .

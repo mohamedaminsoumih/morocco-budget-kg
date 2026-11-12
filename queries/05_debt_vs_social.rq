@@ -1,0 +1,17 @@
+# Debt service compared with health + education, per year (billion MAD).
+
+PREFIX bud:  <https://github.com/mohamedaminsoumih/morocco-budget-kg/ontology#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?year
+       (SUM(IF(?top = bud:DebtService, ?amount, 0)) / 1000000000 AS ?debt)
+       (SUM(IF(?code IN ("10", "11", "12"), ?amount, 0)) / 1000000000
+            AS ?health_and_education)
+WHERE {
+    ?allocation bud:inLaw/bud:budgetYear ?year ;
+                bud:allocatedTo/bud:budgetCode ?code ;
+                bud:budgetLine/skos:broader ?top ;
+                bud:paymentCredits ?amount .
+}
+GROUP BY ?year
+ORDER BY ?year

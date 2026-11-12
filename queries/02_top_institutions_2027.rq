@@ -1,0 +1,17 @@
+# The 10 institutions with the largest budget in the 2027 draft law,
+# all budget lines included (operating, investment, debt).
+
+PREFIX bud:  <https://github.com/mohamedaminsoumih/morocco-budget-kg/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?name (SUM(?amount) / 1000000000 AS ?billion_mad)
+WHERE {
+    ?law bud:budgetYear "2027"^^<http://www.w3.org/2001/XMLSchema#gYear> .
+    ?allocation bud:inLaw ?law ;
+                bud:allocatedTo ?institution ;
+                bud:paymentCredits ?amount .
+    ?official bud:nameOf ?institution ; bud:inLaw ?law ; rdfs:label ?name .
+}
+GROUP BY ?name
+ORDER BY DESC(?billion_mad)
+LIMIT 10

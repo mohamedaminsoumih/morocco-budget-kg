@@ -1,0 +1,18 @@
+# Institutions whose official French name changed between 2024 and 2027.
+# Same budget code, different names: the graph keeps both.
+# Compares bud:nameKey, so spelling variations (' vs ’, É vs E) don't count.
+
+PREFIX bud:  <https://github.com/mohamedaminsoumih/morocco-budget-kg/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?code ?name_2024 ?name_2027
+WHERE {
+    ?institution bud:budgetCode ?code .
+    ?n1 bud:nameOf ?institution ; rdfs:label ?name_2024 ; bud:nameKey ?key_2024 ;
+        bud:inLaw/bud:budgetYear "2024"^^xsd:gYear .
+    ?n2 bud:nameOf ?institution ; rdfs:label ?name_2027 ; bud:nameKey ?key_2027 ;
+        bud:inLaw/bud:budgetYear "2027"^^xsd:gYear .
+    FILTER (?key_2024 != ?key_2027)
+}
+ORDER BY ?code

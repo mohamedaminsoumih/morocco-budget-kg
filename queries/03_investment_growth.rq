@@ -1,0 +1,28 @@
+# Investment payment credits in 2023 vs 2027, per institution.
+# Works across name changes: institutions are linked by budget code.
+
+PREFIX bud:  <https://github.com/mohamedaminsoumih/morocco-budget-kg/ontology#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?name ?invest_2023 ?invest_2027
+       (ROUND((?invest_2027 / ?invest_2023 - 1) * 100) AS ?growth_pct)
+WHERE {
+    {
+        SELECT ?institution (SUM(?a) / 1000000 AS ?invest_2023) WHERE {
+            ?x bud:allocatedTo ?institution ; bud:budgetLine bud:investment ;
+               bud:paymentCredits ?a ; bud:inLaw/bud:budgetYear "2023"^^xsd:gYear .
+        } GROUP BY ?institution
+    }
+    {
+        SELECT ?institution (SUM(?b) / 1000000 AS ?invest_2027) WHERE {
+            ?y bud:allocatedTo ?institution ; bud:budgetLine bud:investment ;
+               bud:paymentCredits ?b ; bud:inLaw/bud:budgetYear "2027"^^xsd:gYear .
+        } GROUP BY ?institution
+    }
+    ?official bud:nameOf ?institution ;
+              bud:inLaw/bud:budgetYear "2027"^^xsd:gYear ;
+              rdfs:label ?name .
+    FILTER (?invest_2023 >= 500)
+}
+ORDER BY DESC(?growth_pct)
